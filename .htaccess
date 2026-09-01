@@ -1,0 +1,5 @@
+# フォルダにアクセスした際、ファイル一覧が表示されるのを防ぐ
+Options -Indexes
+
+# http://example.com にアクセスされたら login.php を表示する
+DirectoryIndex login.php
