@@ -1,6 +1,6 @@
 <?php
 /**
- * ログアウト処理
+ * ログアウト
  *
  * PHP version 5.4.16
  *
@@ -9,3 +9,5 @@
  * @author    Yuji Suzuki
  * @copyright 2026 MARUYAMA COFFEE Co., Ltd.
  */
+
+require_once 'frames/logic/logout_logic.php';
