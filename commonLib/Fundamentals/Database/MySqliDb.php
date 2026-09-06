@@ -5,6 +5,9 @@
  *
  * PHP version 5.4.16
  *
+ * 【改訂履歴】
+ * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ *
  * @category  Fundamentals
  * @package   Database
  * @author    Yuji Suzuki
@@ -20,7 +23,9 @@ class MySqliDb extends DbBase
     private $conn = null;
 
 
-
+    /**
+     * DB接続
+     */
     public function Open()
     {
         $this->conn = new \mysqli(
@@ -49,7 +54,9 @@ class MySqliDb extends DbBase
     }
 
 
-
+    /**
+     * DB切断
+     */
     public function Close()
     {
         $this->CheckBeforeClose();
@@ -65,7 +72,9 @@ class MySqliDb extends DbBase
     }
 
 
-
+    /**
+     * トランザクション開始
+     */
     public function BeginTransaction()
     {
         $this->CheckOpen();
@@ -77,7 +86,9 @@ class MySqliDb extends DbBase
     }
 
 
-
+    /**
+     * Commit
+     */
     public function Commit()
     {
         $this->CheckOpen();
@@ -92,7 +103,9 @@ class MySqliDb extends DbBase
     }
 
 
-
+    /**
+     * Rollback
+     */
     public function Rollback()
     {
         $this->CheckOpen();
@@ -107,7 +120,9 @@ class MySqliDb extends DbBase
     }
 
 
-
+    /**
+     * SELECT
+     */
     public function ExecuteQuery($sql, $params = array())
     {
         $this->CheckOpen();
@@ -123,7 +138,9 @@ class MySqliDb extends DbBase
     }
 
 
-
+    /**
+     * 1件取得
+     */
     public function ExecuteSingle($sql, $params = array())
     {
         $rows = $this->ExecuteQuery(
@@ -138,7 +155,9 @@ class MySqliDb extends DbBase
     }
 
 
-
+    /**
+     * 単一値取得
+     */
     public function ExecuteScalar($sql, $params = array())
     {
         $rows = $this->ExecuteQuery(
@@ -158,7 +177,9 @@ class MySqliDb extends DbBase
     }
 
 
-
+    /**
+     * INSERT UPDATE DELETE
+     */
     public function ExecuteNonQuery($sql, $params = array())
     {
         $this->CheckOpen();
@@ -178,7 +199,6 @@ class MySqliDb extends DbBase
 
         return $affected;
     }
-
 
 
     /**

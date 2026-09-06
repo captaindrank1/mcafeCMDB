@@ -5,6 +5,9 @@
  *
  * PHP version 5.4.16
  *
+ * 【改訂履歴】
+ * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ *
  * @category  Fundamentals
  * @package   Database
  * @author    Yuji Suzuki
@@ -69,7 +72,6 @@ class PdoDb extends DbBase
     }
 
 
-
     /**
      * トランザクション開始
      */
@@ -81,7 +83,6 @@ class PdoDb extends DbBase
 
         $this->inTransaction = true;
     }
-
 
 
     /**
@@ -100,7 +101,6 @@ class PdoDb extends DbBase
     }
 
 
-
     /**
      * Rollback
      */
@@ -115,7 +115,6 @@ class PdoDb extends DbBase
             $this->inTransaction = false;
         }
     }
-
 
 
     /**
@@ -133,7 +132,6 @@ class PdoDb extends DbBase
             \PDO::FETCH_ASSOC
             );
     }
-
 
 
     /**
@@ -158,7 +156,6 @@ class PdoDb extends DbBase
     }
 
 
-
     /**
      * 単一値取得
      */
@@ -172,7 +169,6 @@ class PdoDb extends DbBase
 
         return $stmt->fetchColumn();
     }
-
 
 
     /**
