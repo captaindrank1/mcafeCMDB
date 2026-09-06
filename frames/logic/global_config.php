@@ -1,15 +1,21 @@
 <?php
 /**
- * 定数定義
+ * 共通定数定義
  *
  * PHP version 5.4.16
  *
- * @category  Application
+ * 【改訂履歴】
+ * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ *
+ * @category  Logic
  * @package   mcafeCMDB
  * @author    Yuji Suzuki
  * @copyright 2026 MARUYAMA COFFEE Co., Ltd.
  */
 
+/*
+ * データベース関連定数
+ */
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'mcafeCMDB');
 define('DB_USER', 'mcafeCMDB_admin');

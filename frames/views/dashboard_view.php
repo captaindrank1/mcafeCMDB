@@ -1,3 +1,18 @@
+<?php
+/**
+ * ダッシュボード画面
+ *
+ * PHP version 5.4.16
+ *
+ * 【改訂履歴】
+ * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ *
+ * @category  View
+ * @package   mcafeCMDB
+ * @author    Yuji Suzuki
+ * @copyright 2026 MARUYAMA COFFEE Co., Ltd.
+ */
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,8 +68,20 @@
           <ul class="treeview-menu">
             <?php if (isset($catalogFunctions[$catalog['catalog_id']])) { ?>
               <?php foreach ($catalogFunctions[$catalog['catalog_id']] as $function) { ?>
+              <?php
+              $extraParams = '';
+              if (isset($function['page_parameter']) && $function['page_parameter'] !== '') {
+                  foreach (explode('&', $function['page_parameter']) as $pair) {
+                      $kv = explode('=', $pair, 2);
+                      if (count($kv) === 2 && trim($kv[0]) === 'action' && trim($kv[1]) === '%s') {
+                          $extraParams = '&action=new';
+                          break;
+                      }
+                  }
+              }
+              ?>
               <li<?php if ((int)$catalog['catalog_id'] === $currentCatalogId && $function['page_controller'] === $currentFunc) { echo ' class="active"'; } ?>>
-                <a href="dashboard.php?catalog_id=<?php echo (int)$catalog['catalog_id']; ?>&func=<?php echo rawurlencode($function['page_controller']); ?>"><i class="fa fa-circle-o"></i> <?php echo htmlspecialchars($function['function_name'], ENT_QUOTES, 'UTF-8'); ?></a>
+                <a href="dashboard.php?catalog_id=<?php echo (int)$catalog['catalog_id']; ?>&func=<?php echo rawurlencode($function['page_controller']); ?><?php echo $extraParams; ?>"><i class="fa fa-circle-o"></i> <?php echo htmlspecialchars($function['function_name'], ENT_QUOTES, 'UTF-8'); ?></a>
               </li>
               <?php } ?>
             <?php } ?>
