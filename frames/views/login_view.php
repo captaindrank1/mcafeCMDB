@@ -18,6 +18,8 @@
 <head>
   <meta charset="utf-8">
   <title>mcafeCMDB ログイン</title>
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="asset/bower_components/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="asset/dist/css/AdminLTE.min.css">
 </head>
@@ -30,7 +32,7 @@
     <p class="login-box-msg">サインインしてください</p>
     <form action="" method="post">
       <div class="form-group has-feedback">
-        <input type="text" name="logon_id" class="form-control" placeholder="ログオンID" required>
+        <input type="text" name="logon_id" class="form-control" placeholder="ログオンID" required autofocus>
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">

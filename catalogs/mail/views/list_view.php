@@ -16,7 +16,7 @@
 <!DOCTYPE html>
 <div class="box box-primary">
   <div class="box-header with-border">
-    <h3 class="box-title">メールアドレス台帳（一覧）</h3>
+    <h3 class="box-title"><?php echo htmlspecialchars($currentCatalogName, ENT_QUOTES, 'UTF-8'); ?>（一覧）</h3>
   </div>
   <div class="box-body">
     <?php if ($listError !== '') { ?>

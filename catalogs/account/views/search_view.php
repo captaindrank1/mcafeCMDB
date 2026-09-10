@@ -1,11 +1,11 @@
 <?php
 /**
- * メールアドレス台帳：条件検索画面
+ * アカウント管理台帳：条件検索画面
  *
  * PHP version 5.4.16
  *
  * 【改訂履歴】
- * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ * - 2026/09/10 1.0.0 鈴木(ゆ)  : 新規作成
  *
  * @category  View
  * @package   mcafeCMDB
@@ -50,20 +50,38 @@
       <thead>
         <tr>
           <th>操作</th>
+          <th>プライマリアカウント</th>
           <th>氏名</th>
-          <th>メールアドレス</th>
-          <th>携帯メールアドレス</th>
+          <th>区分</th>
+          <th>備考</th>
+          <th>サービス</th>
+          <th>MUA</th>
         </tr>
       </thead>
       <tbody>
-        <?php foreach ($searchRows as $row) { ?>
+        <?php foreach ($searchResults as $result) { ?>
         <tr>
           <td>
-            <a href="dashboard.php?catalog_id=<?php echo (int)$currentCatalogId; ?>&amp;func=register.php&amp;action=edit&amp;pk=<?php echo rawurlencode($row['user_full_name']); ?>" class="btn btn-default btn-xs">編集</a>
+            <a href="dashboard.php?catalog_id=<?php echo (int)$currentCatalogId; ?>&amp;func=register.php&amp;action=edit&amp;pk=<?php echo rawurlencode($result['primary']['primary_account']); ?>" class="btn btn-default btn-xs">編集</a>
           </td>
-          <td><?php echo htmlspecialchars($row['user_full_name'], ENT_QUOTES, 'UTF-8'); ?></td>
-          <td><?php echo htmlspecialchars($row['mail_address'], ENT_QUOTES, 'UTF-8'); ?></td>
-          <td><?php echo htmlspecialchars((string)$row['mobile_address'], ENT_QUOTES, 'UTF-8'); ?></td>
+          <td><?php echo htmlspecialchars($result['primary']['primary_account'], ENT_QUOTES, 'UTF-8'); ?></td>
+          <td><?php echo htmlspecialchars($result['primary']['user_name'], ENT_QUOTES, 'UTF-8'); ?></td>
+          <td><?php echo htmlspecialchars($result['primary']['user_category'], ENT_QUOTES, 'UTF-8'); ?></td>
+          <td><?php echo htmlspecialchars((string)$result['primary']['remarks'], ENT_QUOTES, 'UTF-8'); ?></td>
+          <td>
+            <?php foreach ($result['services'] as $s) { ?>
+            <div>
+              <?php echo htmlspecialchars($s['service_name'], ENT_QUOTES, 'UTF-8'); ?> / ID:<?php echo htmlspecialchars($s['id'], ENT_QUOTES, 'UTF-8'); ?> / パスワード:<?php echo htmlspecialchars($s['passwd'], ENT_QUOTES, 'UTF-8'); ?> / メール:<?php echo htmlspecialchars($s['mail_address'], ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+            <?php } ?>
+          </td>
+          <td>
+            <?php foreach ($result['muas'] as $m) { ?>
+            <div>
+              <?php echo htmlspecialchars($m['mua'], ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+            <?php } ?>
+          </td>
         </tr>
         <?php } ?>
       </tbody>

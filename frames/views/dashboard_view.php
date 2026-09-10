@@ -18,6 +18,8 @@
 <head>
   <meta charset="utf-8">
   <title>mcafeCMDB Dashboard</title>
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="asset/bower_components/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="asset/dist/css/AdminLTE.min.css">
   <link rel="stylesheet" href="asset/dist/css/skins/_all-skins.min.css">

@@ -16,7 +16,7 @@
 <!DOCTYPE html>
 <div class="box box-primary">
   <div class="box-header with-border">
-    <h3 class="box-title">メールアドレス台帳（<?php echo $isEdit ? '編集' : '新規登録'; ?>）</h3>
+    <h3 class="box-title"><?php echo htmlspecialchars($currentCatalogName, ENT_QUOTES, 'UTF-8'); ?>（<?php echo $isEdit ? '編集' : '新規登録'; ?>）</h3>
   </div>
   <form action="<?php echo htmlspecialchars($embedUrl, ENT_QUOTES, 'UTF-8'); ?>" method="post" class="form-horizontal">
     <input type="hidden" name="action" value="<?php echo $isEdit ? 'edit' : 'new'; ?>">

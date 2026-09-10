@@ -73,6 +73,7 @@ if ($currentCatalogId > 0 && $currentFunc !== '') {
     }
 
     if ($currentCatalog !== null && $currentFunction !== null) {
+        $currentCatalogName = (string)$currentCatalog['catalog_name'];
         $workingDir = ltrim($currentCatalog['working_dir'], '/\\');
         $controllerPath = __DIR__ . '/../../' . $workingDir . '/' . $currentFunction['page_controller'];
         $catalogsRoot = realpath(__DIR__ . '/../../catalogs');
