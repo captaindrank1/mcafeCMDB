@@ -7,6 +7,7 @@
  * 【改訂履歴】
  * - 2026/09/10 1.0.0 鈴木(ゆ)  : 新規作成
  * - 2026/09/15 1.1.0 鈴木(ゆ)  : MUA選択肢を parameter_name='メーラー' から取得
+ * - 2026/09/15 1.2.0 鈴木(ゆ)  : 論理削除ON時に delete_dt を当日日付で更新
  *
  * @category  Application
  * @package   mcafeCMDB
@@ -301,19 +302,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $regError === '') {
                 /* 対象存在確認 */
                 $sql = <<<SQL
 SELECT
-    COUNT(*)
+    deleted_flag
 FROM
     CMDB_CAT_PRIMARY_ACCOUNTS
 WHERE
     primary_account = ?
 SQL;
-                $exists = $db->ExecuteScalar($sql, array($pk));
-                if ((int)$exists === 0) {
+                $current = $db->ExecuteSingle($sql, array($pk));
+                if ($current === null) {
                     $regError = '編集対象が見つかりません。';
                 } else {
+                    $prevDeletedFlag = (int)$current['deleted_flag'];
                     $db->BeginTransaction();
                     try {
-                        $sql = <<<SQL
+                        if ($deletedFlag === 1 && $prevDeletedFlag === 0) {
+                            $sql = <<<SQL
+UPDATE
+    CMDB_CAT_PRIMARY_ACCOUNTS
+SET
+    user_name = ?,
+    user_category = ?,
+    remarks = ?,
+    deleted_flag = ?,
+    delete_dt = CURDATE()
+WHERE
+    primary_account = ?
+SQL;
+                        } else {
+                            $sql = <<<SQL
 UPDATE
     CMDB_CAT_PRIMARY_ACCOUNTS
 SET
@@ -324,6 +340,7 @@ SET
 WHERE
     primary_account = ?
 SQL;
+                        }
                         $db->ExecuteNonQuery($sql, array($userName, $userCategory, $remarks, $deletedFlag, $pk));
 
                         /* 既存サービスキー */
