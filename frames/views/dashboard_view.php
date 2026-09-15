@@ -6,6 +6,7 @@
  *
  * 【改訂履歴】
  * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ * - 2026/09/15 1.1.0 鈴木(ゆ)  : DataTables を読み込み
  *
  * @category  View
  * @package   mcafeCMDB
@@ -21,6 +22,7 @@
   <link rel="shortcut icon" href="favicon.ico">
   <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="asset/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="asset/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
   <link rel="stylesheet" href="asset/dist/css/AdminLTE.min.css">
   <link rel="stylesheet" href="asset/dist/css/skins/_all-skins.min.css">
 </head>
@@ -111,6 +113,8 @@
 </div>
 <script src="asset/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="asset/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="asset/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="asset/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <script src="asset/dist/js/adminlte.min.js"></script>
 </body>
 </html>

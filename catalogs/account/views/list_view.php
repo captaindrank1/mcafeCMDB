@@ -6,6 +6,7 @@
  *
  * 【改訂履歴】
  * - 2026/09/10 1.0.0 鈴木(ゆ)  : 新規作成
+ * - 2026/09/15 1.1.0 鈴木(ゆ)  : 一覧を DataTable 化(ページング)、[新規登録]ボタンを追加
  *
  * @category  View
  * @package   mcafeCMDB
@@ -16,6 +17,9 @@
 <div class="box box-primary">
   <div class="box-header with-border">
     <h3 class="box-title"><?php echo htmlspecialchars($currentCatalogName, ENT_QUOTES, 'UTF-8'); ?>（一覧）</h3>
+    <div class="box-tools pull-right">
+      <a href="dashboard.php?catalog_id=<?php echo (int)$currentCatalogId; ?>&amp;func=register.php&amp;action=new" class="btn btn-primary btn-sm">新規登録</a>
+    </div>
   </div>
   <div class="box-body">
     <?php if ($listError !== '') { ?>
@@ -24,7 +28,7 @@
     </div>
     <?php } else { ?>
     <div class="table-responsive">
-      <table class="table table-bordered">
+      <table id="accountTable" class="table table-bordered">
         <thead>
           <tr>
           <th style="width:  1%; white-space: nowrap; text-align: center;">操作</th>
@@ -54,3 +58,29 @@
     <?php } ?>
   </div>
 </div>
+<script>
+window.addEventListener('load', function () {
+    if (typeof jQuery === 'undefined' || !jQuery.fn.dataTable) {
+        return;
+    }
+    jQuery('#accountTable').DataTable({
+        paging: true,
+        pageLength: 25,
+        lengthMenu: [10, 25, 50, 100],
+        searching: true,
+        ordering: true,
+        order: [[1, 'asc']],
+        columnDefs: [{ targets: 0, orderable: false, searchable: false }],
+        autoWidth: false,
+        language: {
+            lengthMenu: '_MENU_ 件を表示',
+            zeroRecords: '該当するデータはありません。',
+            info: '_TOTAL_ 件中 _START_ ～ _END_ 件を表示',
+            infoEmpty: '0 件',
+            infoFiltered: '(全 _MAX_ 件から絞り込み)',
+            search: '検索:',
+            paginate: { first: '最初', last: '最後', next: '次', previous: '前' }
+        }
+    });
+});
+</script>
