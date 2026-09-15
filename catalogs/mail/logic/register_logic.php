@@ -13,9 +13,7 @@
  * @copyright 2026 MARUYAMA COFFEE Co., Ltd.
  */
 
-require_once __DIR__ . '/../../../frames/logic/global_config.php';
-require_once __DIR__ . '/../../../commonLib/Fundamentals/Database/MySqliDb.php';
-use Fundamentals\Database\MySqliDb;
+require_once __DIR__ . '/../../../frames/logic/db_connection.php';
 
 $regError = '';
 $isEdit = false;
@@ -36,13 +34,11 @@ if ($action === 'edit') {
         $regError = '編集対象が指定されていません。';
     } else {
         try {
-            $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-            $db->Open();
+            $db = cmdb_db();
             $editRow = $db->ExecuteSingle(
                 'SELECT user_full_name, mail_address, mobile_address FROM CMDB_CAT_MAIL WHERE user_full_name = ?',
                 array($pk)
             );
-            $db->Close();
 
             if ($editRow === null) {
                 $regError = '編集対象が見つかりません。';
@@ -71,13 +67,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $regError = '氏名とメールアドレスは必須です。';
         } else {
             try {
-                $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-                $db->Open();
+                $db = cmdb_db();
                 $db->ExecuteNonQuery(
                     'UPDATE CMDB_CAT_MAIL SET mail_address = ?, mobile_address = ? WHERE user_full_name = ?',
                     array($mail, $mobile === '' ? null : $mobile, $pk)
                 );
-                $db->Close();
 
                 header('Location: ' . $embedBaseUrl . 'list.php');
                 exit;
@@ -93,8 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $regError = '氏名とメールアドレスは必須です。';
         } else {
             try {
-                $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-                $db->Open();
+                $db = cmdb_db();
 
                 $exists = $db->ExecuteScalar(
                     'SELECT COUNT(*) FROM CMDB_CAT_MAIL WHERE user_full_name = ?',
@@ -109,8 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         array($fullName, $mail, $mobile === '' ? null : $mobile)
                     );
                 }
-
-                $db->Close();
 
                 if ($regError === '') {
                     header('Location: ' . $embedBaseUrl . 'list.php');
