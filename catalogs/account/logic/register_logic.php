@@ -6,6 +6,7 @@
  *
  * 【改訂履歴】
  * - 2026/09/10 1.0.0 鈴木(ゆ)  : 新規作成
+ * - 2026/09/15 1.1.0 鈴木(ゆ)  : MUA選択肢を parameter_name='メーラー' から取得
  *
  * @category  Application
  * @package   mcafeCMDB
@@ -84,7 +85,7 @@ SQL;
         foreach ($rows as $row) {
             $serviceOptions[] = (string)$row['value'];
         }
-        $rows = $db->ExecuteQuery($sql, array($catalogName, 'MUA'));
+        $rows = $db->ExecuteQuery($sql, array($catalogName, 'メーラー'));
         foreach ($rows as $row) {
             $muaOptions[] = (string)$row['value'];
         }
