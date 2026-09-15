@@ -6,6 +6,7 @@
  *
  * 【改訂履歴】
  * - 2026/09/10 1.0.0 鈴木(ゆ)  : 新規作成
+ * - 2026/09/15 1.1.0 鈴木(ゆ)  : MUAの選択をチェックボックスに変更
  *
  * @category  View
  * @package   mcafeCMDB
@@ -107,30 +108,23 @@
       <h4>利用メーラー（MUA）</h4>
       <div class="form-group">
         <div class="col-sm-12">
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th style="width:80%">MUA</th>
-                <th style="width:20%"></th>
-              </tr>
-            </thead>
-            <tbody id="muaRows">
-              <?php foreach ($muaRows as $m) { ?>
-              <tr>
-                <td>
-                  <select name="mua[]" class="form-control">
-                    <option value=""></option>
-                    <?php foreach ($muaOptions as $opt) { ?>
-                    <option value="<?php echo htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?>"<?php if ($m['mua'] === $opt) { echo ' selected'; } ?>><?php echo htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?></option>
-                    <?php } ?>
-                  </select>
-                </td>
-                <td><button type="button" class="btn btn-danger btn-xs" onclick="removeRow(this)">削除</button></td>
-              </tr>
-              <?php } ?>
-            </tbody>
-          </table>
-          <button type="button" class="btn btn-default btn-sm" onclick="addMuaRow()">MUAを追加</button>
+          <?php
+          $selectedMuas = array();
+          foreach ($muaRows as $m) {
+              if ($m['mua'] !== '') {
+                  $selectedMuas[$m['mua']] = true;
+              }
+          }
+          ?>
+          <?php if (count($muaOptions) === 0) { ?>
+          <p class="text-muted">選択可能な MUA が登録されていません。</p>
+          <?php } else { ?>
+          <?php foreach ($muaOptions as $opt) { ?>
+          <label class="checkbox-inline">
+            <input type="checkbox" name="mua[]" value="<?php echo htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?>"<?php if (isset($selectedMuas[$opt])) { echo ' checked'; } ?>> <?php echo htmlspecialchars($opt, ENT_QUOTES, 'UTF-8'); ?>
+          </label>
+          <?php } ?>
+          <?php } ?>
         </div>
       </div>
 
@@ -195,7 +189,6 @@
 
 <script>
 var serviceOptions = <?php echo json_encode($serviceOptions); ?>;
-var muaOptions = <?php echo json_encode($muaOptions); ?>;
 
 function removeRow(btn) {
     var node = btn;
@@ -261,13 +254,6 @@ function addServiceRow() {
         buildInput('service_id[]'),
         buildInput('service_passwd[]'),
         buildInput('service_mail[]'),
-        buildRemoveButton()
-    ]);
-}
-
-function addMuaRow() {
-    appendRow('muaRows', [
-        buildSelect('mua[]', muaOptions),
         buildRemoveButton()
     ]);
 }
