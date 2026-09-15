@@ -13,16 +13,13 @@
  * @copyright 2026 MARUYAMA COFFEE Co., Ltd.
  */
 
-require_once __DIR__ . '/../../../frames/logic/global_config.php';
-require_once __DIR__ . '/../../../commonLib/Fundamentals/Database/MySqliDb.php';
-use Fundamentals\Database\MySqliDb;
+require_once __DIR__ . '/../../../frames/logic/db_connection.php';
 
 $accountRows = array();
 $listError = '';
 
 try {
-    $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-    $db->Open();
+    $db = cmdb_db();
 
     $sql = <<<SQL
 SELECT
@@ -40,7 +37,6 @@ ORDER BY
 SQL;
 
     $accountRows = $db->ExecuteQuery($sql);
-    $db->Close();
 } catch (\Exception $e) {
     $listError = '一覧の取得に失敗しました。';
 }

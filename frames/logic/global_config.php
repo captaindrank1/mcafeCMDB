@@ -20,3 +20,8 @@ define('DB_HOST', 'localhost');
 define('DB_NAME', 'mcafeCMDB');
 define('DB_USER', 'mcafeCMDB_admin');
 define('DB_PASS', 'maruyama10');
+
+/*
+ * サイドメニュー(台帳・機能一覧)のセッションキャッシュ有効期間(秒)
+ */
+define('MENU_CACHE_TTL', 300);

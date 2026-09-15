@@ -15,9 +15,7 @@
 
 session_start();
 
-require_once __DIR__ . '/../../commonLib/Fundamentals/Database/MySqliDb.php';
-require_once __DIR__ . '/global_config.php';
-use Fundamentals\Database\MySqliDb;
+require_once __DIR__ . '/db_connection.php';
 
 if (!isset($_SESSION['current_user'])) {
     header('Location: login.php');
@@ -37,8 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'パスワードは必ず設定してください。';
     } else {
         try {
-            $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-            $db->Open();
+            $db = cmdb_db();
 
             $hashed = hash('sha256', $passwd);
             $sql = <<<SQL
@@ -50,8 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 SQL;
 
             $db->ExecuteNonQuery($sql, array($nick_name, $hashed, $user['user_id']));
-
-            $db->Close();
 
             $_SESSION['current_user']['nick_name'] = $nick_name;
 

@@ -13,9 +13,7 @@
  * @copyright 2026 MARUYAMA COFFEE Co., Ltd.
  */
 
-require_once __DIR__ . '/../../../frames/logic/global_config.php';
-require_once __DIR__ . '/../../../commonLib/Fundamentals/Database/MySqliDb.php';
-use Fundamentals\Database\MySqliDb;
+require_once __DIR__ . '/../../../frames/logic/db_connection.php';
 
 $regError = '';
 $isEdit = false;
@@ -48,8 +46,7 @@ if ($action === 'edit') {
 /* 選択肢・台帳名を取得（表示・バリデーション共通） */
 $catalogName = '';
 try {
-    $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-    $db->Open();
+    $db = cmdb_db();
 
     $sql = <<<SQL
 SELECT
@@ -92,8 +89,6 @@ SQL;
             $muaOptions[] = (string)$row['value'];
         }
     }
-
-    $db->Close();
 } catch (\Exception $e) {
     $regError = 'マスタ情報の取得に失敗しました。';
 }
@@ -104,8 +99,7 @@ if ($regError === '' && $isEdit && $_SERVER['REQUEST_METHOD'] !== 'POST') {
         $regError = '編集対象が指定されていません。';
     } else {
         try {
-            $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-            $db->Open();
+            $db = cmdb_db();
 
             $sql = <<<SQL
 SELECT
@@ -168,8 +162,6 @@ SQL;
                     $muaRows = array(array('mua' => ''));
                 }
             }
-
-            $db->Close();
         } catch (\Exception $e) {
             $regError = 'データの取得に失敗しました。';
         }
@@ -302,8 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $regError === '') {
     /* DB 登録・更新 */
     if ($regError === '') {
         try {
-            $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-            $db->Open();
+            $db = cmdb_db();
 
             if ($isEdit) {
                 /* 対象存在確認 */
@@ -318,7 +309,6 @@ SQL;
                 $exists = $db->ExecuteScalar($sql, array($pk));
                 if ((int)$exists === 0) {
                     $regError = '編集対象が見つかりません。';
-                    $db->Close();
                 } else {
                     $db->BeginTransaction();
                     try {
@@ -460,13 +450,11 @@ SQL;
                         }
 
                         $db->Commit();
-                        $db->Close();
 
                         header('Location: ' . $embedBaseUrl . 'list.php');
                         exit;
                     } catch (\Exception $e) {
                         $db->Rollback();
-                        $db->Close();
                         $regError = '更新に失敗しました。';
                     }
                 }
@@ -483,7 +471,6 @@ SQL;
                 $exists = $db->ExecuteScalar($sql, array($primaryAccount));
                 if ((int)$exists > 0) {
                     $regError = '同じプライマリアカウントがすでに登録されています。';
-                    $db->Close();
                 } else {
                     $db->BeginTransaction();
                     try {
@@ -528,13 +515,11 @@ SQL;
                         }
 
                         $db->Commit();
-                        $db->Close();
 
                         header('Location: ' . $embedBaseUrl . 'list.php');
                         exit;
                     } catch (\Exception $e) {
                         $db->Rollback();
-                        $db->Close();
                         $regError = '登録に失敗しました。';
                     }
                 }

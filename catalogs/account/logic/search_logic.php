@@ -13,9 +13,7 @@
  * @copyright 2026 MARUYAMA COFFEE Co., Ltd.
  */
 
-require_once __DIR__ . '/../../../frames/logic/global_config.php';
-require_once __DIR__ . '/../../../commonLib/Fundamentals/Database/MySqliDb.php';
-use Fundamentals\Database\MySqliDb;
+require_once __DIR__ . '/../../../frames/logic/db_connection.php';
 
 $keyword = isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : '';
 $searched = isset($_GET['keyword']);
@@ -26,11 +24,10 @@ if ($searched) {
     $like = '%' . $keyword . '%';
 
     try {
-        $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-        $db->Open();
+        $db = cmdb_db();
 
         $sql = <<<SQL
-SELECT DISTINCT
+SELECT
     p.primary_account,
     p.user_name,
     p.user_category,
@@ -38,14 +35,6 @@ SELECT DISTINCT
     p.update_time
 FROM
     CMDB_CAT_PRIMARY_ACCOUNTS p
-LEFT JOIN
-    CMDB_CAT_ACCOUNT_LIST a
-        ON  a.primary_account = p.primary_account
-        AND a.deleted_flag = 0
-LEFT JOIN
-    CMDB_CAT_USE_MUA m
-        ON  m.primary_account = p.primary_account
-        AND m.deleted_flag = 0
 WHERE
     p.deleted_flag = 0
     AND (
@@ -53,11 +42,25 @@ WHERE
         OR  p.user_name       LIKE ?
         OR  p.user_category   LIKE ?
         OR  p.remarks         LIKE ?
-        OR  a.service_name    LIKE ?
-        OR  a.id              LIKE ?
-        OR  a.passwd          LIKE ?
-        OR  a.mail_address    LIKE ?
-        OR  m.mua             LIKE ?
+        OR  EXISTS (
+                SELECT 1
+                FROM CMDB_CAT_ACCOUNT_LIST a
+                WHERE a.primary_account = p.primary_account
+                  AND a.deleted_flag = 0
+                  AND (
+                          a.service_name LIKE ?
+                      OR  a.id           LIKE ?
+                      OR  a.passwd       LIKE ?
+                      OR  a.mail_address LIKE ?
+                  )
+            )
+        OR  EXISTS (
+                SELECT 1
+                FROM CMDB_CAT_USE_MUA m
+                WHERE m.primary_account = p.primary_account
+                  AND m.deleted_flag = 0
+                  AND m.mua LIKE ?
+            )
     )
 ORDER BY
     p.primary_account
@@ -68,8 +71,19 @@ SQL;
             array($like, $like, $like, $like, $like, $like, $like, $like, $like)
         );
 
-        $sqlService = <<<SQL
+        $servicesByAccount = array();
+        $muasByAccount = array();
+
+        if (count($primaryRows) > 0) {
+            $accounts = array();
+            foreach ($primaryRows as $primary) {
+                $accounts[] = $primary['primary_account'];
+            }
+            $placeholders = implode(', ', array_fill(0, count($accounts), '?'));
+
+            $sqlService = <<<SQL
 SELECT
+    primary_account,
     service_name,
     id,
     passwd,
@@ -77,49 +91,59 @@ SELECT
 FROM
     CMDB_CAT_ACCOUNT_LIST
 WHERE
-    primary_account = ?
+    primary_account IN ({$placeholders})
     AND deleted_flag = 0
     AND (
             service_name LIKE ?
         OR  id           LIKE ?
-        OR  passwd        LIKE ?
+        OR  passwd       LIKE ?
         OR  mail_address LIKE ?
     )
 ORDER BY
+    primary_account,
     service_name
 SQL;
 
-        $sqlMua = <<<SQL
+            $serviceRows = $db->ExecuteQuery(
+                $sqlService,
+                array_merge($accounts, array($like, $like, $like, $like))
+            );
+            foreach ($serviceRows as $row) {
+                $servicesByAccount[$row['primary_account']][] = $row;
+            }
+
+            $sqlMua = <<<SQL
 SELECT
+    primary_account,
     mua
 FROM
     CMDB_CAT_USE_MUA
 WHERE
-    primary_account = ?
+    primary_account IN ({$placeholders})
     AND deleted_flag = 0
     AND mua LIKE ?
 ORDER BY
+    primary_account,
     mua
 SQL;
 
-        foreach ($primaryRows as $primary) {
-            $services = $db->ExecuteQuery(
-                $sqlService,
-                array($primary['primary_account'], $like, $like, $like, $like)
-            );
-            $muas = $db->ExecuteQuery(
+            $muaRows = $db->ExecuteQuery(
                 $sqlMua,
-                array($primary['primary_account'], $like)
+                array_merge($accounts, array($like))
             );
-
-            $searchResults[] = array(
-                'primary'  => $primary,
-                'services' => $services,
-                'muas'     => $muas,
-            );
+            foreach ($muaRows as $row) {
+                $muasByAccount[$row['primary_account']][] = $row;
+            }
         }
 
-        $db->Close();
+        foreach ($primaryRows as $primary) {
+            $key = $primary['primary_account'];
+            $searchResults[] = array(
+                'primary'  => $primary,
+                'services' => isset($servicesByAccount[$key]) ? $servicesByAccount[$key] : array(),
+                'muas'     => isset($muasByAccount[$key]) ? $muasByAccount[$key] : array(),
+            );
+        }
     } catch (\Exception $e) {
         $searchError = '検索に失敗しました。';
     }

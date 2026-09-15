@@ -15,10 +15,7 @@
 
 session_start();
 
-require_once __DIR__ . '/../../commonLib/Fundamentals/Database/MySqliDb.php';
-use Fundamentals\Database\MySqliDb;
-
-require_once __DIR__ . '/global_config.php';
+require_once __DIR__ . '/db_connection.php';
 
 $error = '';
 
@@ -30,8 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'ログオンIDとパスワードを入力してください。';
     } else {
         try {
-            $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-            $db->Open();
+            $db = cmdb_db();
 
             $hashed = hash('sha256', $passwd);
             $sql = <<<SQL
@@ -46,8 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 LIMIT 1
 SQL;
             $user = $db->ExecuteSingle($sql, array($logon_id, $hashed));
-
-            $db->Close();
 
             if ($user) {
                 $_SESSION['current_user'] = array(

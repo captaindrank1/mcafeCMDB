@@ -13,9 +13,7 @@
  * @copyright 2026 MARUYAMA COFFEE Co., Ltd.
  */
 
-require_once __DIR__ . '/../../../frames/logic/global_config.php';
-require_once __DIR__ . '/../../../commonLib/Fundamentals/Database/MySqliDb.php';
-use Fundamentals\Database\MySqliDb;
+require_once __DIR__ . '/../../../frames/logic/db_connection.php';
 
 $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 $searched = ($keyword !== '');
@@ -24,14 +22,12 @@ $searchError = '';
 
 if ($searched) {
     try {
-        $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-        $db->Open();
+        $db = cmdb_db();
         $like = '%' . $keyword . '%';
         $searchRows = $db->ExecuteQuery(
             'SELECT user_full_name, mail_address, mobile_address FROM CMDB_CAT_MAIL WHERE user_full_name LIKE ? OR mail_address LIKE ? OR mobile_address LIKE ? ORDER BY user_full_name',
             array($like, $like, $like)
         );
-        $db->Close();
     } catch (\Exception $e) {
         $searchError = '検索に失敗しました。';
     }

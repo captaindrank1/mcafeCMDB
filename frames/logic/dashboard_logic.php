@@ -15,9 +15,7 @@
 
 session_start();
 
-require_once __DIR__ . '/../../commonLib/Fundamentals/Database/MySqliDb.php';
-require_once __DIR__ . '/global_config.php';
-use Fundamentals\Database\MySqliDb;
+require_once __DIR__ . '/db_connection.php';
 
 if (!isset($_SESSION['current_user'])) {
     header('Location: login.php');
@@ -32,20 +30,32 @@ $information = file_exists($infoFile) ? file_get_contents($infoFile) : 'informat
 $catalogs = array();
 $catalogFunctions = array();
 
-try {
-    $db = new MySqliDb(DB_HOST, DB_NAME, DB_USER, DB_PASS);
-    $db->Open();
+if (isset($_SESSION['menu_cache'])
+    && isset($_SESSION['menu_cache']['expires'])
+    && $_SESSION['menu_cache']['expires'] > time()
+) {
+    $catalogs = $_SESSION['menu_cache']['catalogs'];
+    $catalogFunctions = $_SESSION['menu_cache']['functions'];
+} else {
+    try {
+        $db = cmdb_db();
 
-    $catalogs = $db->ExecuteQuery('SELECT catalog_id, catalog_name, working_dir FROM CMDB_M_CATALOGS WHERE invalid = 0 ORDER BY display_order');
-    $functions = $db->ExecuteQuery('SELECT catalog_id, display_order, function_name, page_controller, page_parameter FROM CMDB_M_CATALOG_FUNCTIONS ORDER BY catalog_id, display_order');
-    $db->Close();
+        $catalogs = $db->ExecuteQuery('SELECT catalog_id, catalog_name, working_dir FROM CMDB_M_CATALOGS WHERE invalid = 0 ORDER BY display_order');
+        $functions = $db->ExecuteQuery('SELECT catalog_id, display_order, function_name, page_controller, page_parameter FROM CMDB_M_CATALOG_FUNCTIONS ORDER BY catalog_id, display_order');
 
-    foreach ($functions as $function) {
-        $catalogFunctions[$function['catalog_id']][] = $function;
+        foreach ($functions as $function) {
+            $catalogFunctions[$function['catalog_id']][] = $function;
+        }
+
+        $_SESSION['menu_cache'] = array(
+            'expires' => time() + MENU_CACHE_TTL,
+            'catalogs' => $catalogs,
+            'functions' => $catalogFunctions,
+        );
+    } catch (\Exception $e) {
+        $catalogs = array();
+        $catalogFunctions = array();
     }
-} catch (\Exception $e) {
-    $catalogs = array();
-    $catalogFunctions = array();
 }
 
 $currentCatalogId = isset($_GET['catalog_id']) ? (int)$_GET['catalog_id'] : 0;
