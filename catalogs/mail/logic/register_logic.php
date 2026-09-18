@@ -6,6 +6,7 @@
  *
  * 【改訂履歴】
  * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ * - 2026/09/18 1.1.0 鈴木(ゆ)  : 登録後の遷移先を list.php 親ページに変更
  *
  * @category  Logic
  * @package   mcafeCMDB
@@ -73,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     array($mail, $mobile === '' ? null : $mobile, $pk)
                 );
 
-                header('Location: ' . $embedBaseUrl . 'list.php');
+                header('Location: ' . cmdb_page_url('list', $currentCatalogId));
                 exit;
             } catch (\Exception $e) {
                 $regError = '更新に失敗しました。';
@@ -104,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 if ($regError === '') {
-                    header('Location: ' . $embedBaseUrl . 'list.php');
+                    header('Location: ' . cmdb_page_url('list', $currentCatalogId));
                     exit;
                 }
             } catch (\Exception $e) {

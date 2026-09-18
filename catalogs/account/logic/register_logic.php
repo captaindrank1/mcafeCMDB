@@ -8,6 +8,7 @@
  * - 2026/09/10 1.0.0 鈴木(ゆ)  : 新規作成
  * - 2026/09/15 1.1.0 鈴木(ゆ)  : MUA選択肢を parameter_name='メーラー' から取得
  * - 2026/09/15 1.2.0 鈴木(ゆ)  : 論理削除ON時に delete_dt を当日日付で更新
+ * - 2026/09/18 1.3.0 鈴木(ゆ)  : 登録後の遷移先を list.php 親ページに変更
  *
  * @category  Application
  * @package   mcafeCMDB
@@ -469,7 +470,7 @@ SQL;
 
                         $db->Commit();
 
-                        header('Location: ' . $embedBaseUrl . 'list.php');
+                        header('Location: ' . cmdb_page_url('list', $currentCatalogId));
                         exit;
                     } catch (\Exception $e) {
                         $db->Rollback();
@@ -534,7 +535,7 @@ SQL;
 
                         $db->Commit();
 
-                        header('Location: ' . $embedBaseUrl . 'list.php');
+                        header('Location: ' . cmdb_page_url('list', $currentCatalogId));
                         exit;
                     } catch (\Exception $e) {
                         $db->Rollback();

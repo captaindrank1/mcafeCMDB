@@ -6,6 +6,7 @@
  *
  * 【改訂履歴】
  * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ * - 2026/09/18 1.1.0 鈴木(ゆ)  : ヘッダーを共通化
  *
  * @category  View
  * @package   mcafeCMDB
@@ -26,33 +27,7 @@
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-  <header class="main-header">
-    <a href="dashboard.php" class="logo">
-      <span class="logo-mini"><b>m</b>C</span>
-      <span class="logo-lg"><b>mcafe</b>CMDB</span>
-    </a>
-    <nav class="navbar navbar-static-top">
-      <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-          <li class="dropdown user user-menu">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <span class="hidden-xs"><?php echo htmlspecialchars($user['nick_name'], ENT_QUOTES, 'UTF-8'); ?></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li class="user-footer">
-                <div class="pull-left">
-                  <a href="mypage.php" class="btn btn-default btn-flat">プロフィール</a>
-                </div>
-                <div class="pull-right">
-                  <a href="logout.php" class="btn btn-default btn-flat">ログアウト</a>
-                </div>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </header>
+<?php require __DIR__ . '/header.php'; ?>
   <div class="content-wrapper">
     <section class="content-header">
       <h1>プロフィール変更</h1>

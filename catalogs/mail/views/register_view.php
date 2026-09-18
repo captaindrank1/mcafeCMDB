@@ -6,6 +6,7 @@
  *
  * 【改訂履歴】
  * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ * - 2026/09/18 1.1.0 鈴木(ゆ)  : リンク先を親ページ(search/list/register.php)に変更
  *
  * @category  View
  * @package   mcafeCMDB
@@ -55,7 +56,7 @@
       <?php } ?>
     </div>
     <div class="box-footer">
-      <a href="<?php echo htmlspecialchars($embedBaseUrl . 'list.php', ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-default">一覧へ戻る</a>
+      <a href="<?php echo htmlspecialchars(cmdb_page_url('list', $currentCatalogId), ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-default">一覧へ戻る</a>
       <button type="submit" class="btn btn-primary pull-right"><?php echo $isEdit ? '更新' : '登録'; ?></button>
     </div>
   </form>

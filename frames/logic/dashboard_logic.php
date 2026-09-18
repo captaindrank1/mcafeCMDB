@@ -6,6 +6,7 @@
  *
  * 【改訂履歴】
  * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
+ * - 2026/09/18 2.0.0 鈴木(ゆ)  : 台帳機能の埋め込みを search/list/register 親ページへ移管
  *
  * @category  Logic
  * @package   mcafeCMDB
@@ -13,114 +14,12 @@
  * @copyright 2026 MARUYAMA COFFEE Co., Ltd.
  */
 
-session_start();
-
-require_once __DIR__ . '/db_connection.php';
-
-if (!isset($_SESSION['current_user'])) {
-    header('Location: login.php');
-    exit;
-}
-
-$user = $_SESSION['current_user'];
+require_once __DIR__ . '/menu_loader.php';
 
 $infoFile = __DIR__ . '/../../information.txt';
 $information = file_exists($infoFile) ? file_get_contents($infoFile) : 'information.txt が見つかりません。';
 
-$catalogs = array();
-$catalogFunctions = array();
-
-if (isset($_SESSION['menu_cache'])
-    && isset($_SESSION['menu_cache']['expires'])
-    && $_SESSION['menu_cache']['expires'] > time()
-) {
-    $catalogs = $_SESSION['menu_cache']['catalogs'];
-    $catalogFunctions = $_SESSION['menu_cache']['functions'];
-} else {
-    try {
-        $db = cmdb_db();
-
-        $catalogs = $db->ExecuteQuery('SELECT catalog_id, catalog_name, working_dir FROM CMDB_M_CATALOGS WHERE invalid = 0 ORDER BY display_order');
-        $functions = $db->ExecuteQuery('SELECT catalog_id, display_order, function_name, page_controller, page_parameter FROM CMDB_M_CATALOG_FUNCTIONS ORDER BY catalog_id, display_order');
-
-        foreach ($functions as $function) {
-            $catalogFunctions[$function['catalog_id']][] = $function;
-        }
-
-        $_SESSION['menu_cache'] = array(
-            'expires' => time() + MENU_CACHE_TTL,
-            'catalogs' => $catalogs,
-            'functions' => $catalogFunctions,
-        );
-    } catch (\Exception $e) {
-        $catalogs = array();
-        $catalogFunctions = array();
-    }
-}
-
-$currentCatalogId = isset($_GET['catalog_id']) ? (int)$_GET['catalog_id'] : 0;
-$currentFunc = isset($_GET['func']) ? basename((string)$_GET['func']) : '';
-$embedHtml = null;
-
-if ($currentCatalogId > 0 && $currentFunc !== '') {
-
-    $currentCatalog = null;
-    foreach ($catalogs as $catalog) {
-        if ((int)$catalog['catalog_id'] === $currentCatalogId) {
-            $currentCatalog = $catalog;
-            break;
-        }
-    }
-
-    $currentFunction = null;
-    if ($currentCatalog !== null && isset($catalogFunctions[$currentCatalogId])) {
-        foreach ($catalogFunctions[$currentCatalogId] as $function) {
-            if ($function['page_controller'] === $currentFunc) {
-                $currentFunction = $function;
-                break;
-            }
-        }
-    }
-
-    if ($currentCatalog !== null && $currentFunction !== null) {
-        $currentCatalogName = (string)$currentCatalog['catalog_name'];
-        $workingDir = ltrim($currentCatalog['working_dir'], '/\\');
-        $controllerPath = __DIR__ . '/../../' . $workingDir . '/' . $currentFunction['page_controller'];
-        $catalogsRoot = realpath(__DIR__ . '/../../catalogs');
-        $real = realpath($controllerPath);
-
-        if ($real !== false && strpos($real, $catalogsRoot) === 0) {
-
-            $pageParams = array();
-            $declared = trim($currentFunction['page_parameter']);
-            if ($declared !== '') {
-                foreach (explode('&', $declared) as $pair) {
-                    $kv = explode('=', $pair, 2);
-                    if (count($kv) === 2 && isset($_GET[$kv[0]])) {
-                        $pageParams[$kv[0]] = ($kv[1] === '%i')
-                            ? (int)$_GET[$kv[0]]
-                            : (string)$_GET[$kv[0]];
-                    }
-                }
-            }
-
-            $embedBaseUrl = 'dashboard.php?catalog_id=' . $currentCatalogId . '&func=';
-            $embedUrl = $embedBaseUrl . rawurlencode($currentFunc);
-
-            ob_start();
-            try {
-                require $real;
-            } catch (\Exception $e) {
-                echo '<div class="callout callout-danger"><p>画面の読み込みに失敗しました。</p></div>';
-            }
-            $embedHtml = ob_get_clean();
-
-        } else {
-            $embedHtml = '<div class="callout callout-warning"><p>指定された機能が見つかりません。</p></div>';
-        }
-    } else {
-        $embedHtml = '<div class="callout callout-warning"><p>指定された機能が見つかりません。</p></div>';
-    }
-}
+$currentCatalogId = 0;
+$currentPage = '';
 
 require_once __DIR__ . '/../views/dashboard_view.php';

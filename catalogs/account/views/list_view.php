@@ -7,6 +7,7 @@
  * 【改訂履歴】
  * - 2026/09/10 1.0.0 鈴木(ゆ)  : 新規作成
  * - 2026/09/15 1.1.0 鈴木(ゆ)  : 一覧を DataTable 化(ページング)、[新規登録]ボタンを追加
+ * - 2026/09/18 1.2.0 鈴木(ゆ)  : リンク先を親ページ(search/list/register.php)に変更
  *
  * @category  View
  * @package   mcafeCMDB
@@ -18,7 +19,7 @@
   <div class="box-header with-border">
     <h3 class="box-title"><?php echo htmlspecialchars($currentCatalogName, ENT_QUOTES, 'UTF-8'); ?>（一覧）</h3>
     <div class="box-tools pull-right">
-      <a href="dashboard.php?catalog_id=<?php echo (int)$currentCatalogId; ?>&amp;func=register.php&amp;action=new" class="btn btn-primary btn-sm">新規登録</a>
+      <a href="<?php echo htmlspecialchars(cmdb_page_url('register', $currentCatalogId, array('action' => 'new')), ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-primary btn-sm">新規登録</a>
     </div>
   </div>
   <div class="box-body">
@@ -43,7 +44,7 @@
         <?php foreach ($accountRows as $row) { ?>
         <tr>
           <td>
-            <a href="dashboard.php?catalog_id=<?php echo (int)$currentCatalogId; ?>&amp;func=register.php&amp;action=edit&amp;pk=<?php echo rawurlencode($row['primary_account']); ?>" class="btn btn-default btn-xs">編集</a>
+            <a href="<?php echo htmlspecialchars(cmdb_page_url('register', $currentCatalogId, array('action' => 'edit', 'pk' => $row['primary_account'])), ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-default btn-xs">編集</a>
           </td>
           <td><?php echo htmlspecialchars($row['primary_account'], ENT_QUOTES, 'UTF-8'); ?></td>
           <td><?php echo htmlspecialchars($row['user_name'], ENT_QUOTES, 'UTF-8'); ?></td>
