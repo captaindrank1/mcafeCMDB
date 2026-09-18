@@ -1,13 +1,11 @@
 <?php
 /**
- * ダッシュボード画面
+ * 台帳機能ページ(search / list / register)の共通画面
  *
  * PHP version 5.4.16
  *
  * 【改訂履歴】
- * - 2026/09/06 1.0.0 鈴木(ゆ)  : 新規作成
- * - 2026/09/15 1.1.0 鈴木(ゆ)  : DataTables を読み込み
- * - 2026/09/18 2.0.0 鈴木(ゆ)  : ヘッダー・サイドバーを共通化、台帳埋め込みを廃止
+ * - 2026/09/18 1.0.0 鈴木(ゆ)  : 新規作成
  *
  * @category  View
  * @package   mcafeCMDB
@@ -19,10 +17,11 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>mcafeCMDB Dashboard</title>
+  <title>mcafeCMDB <?php echo htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8'); ?></title>
   <link rel="shortcut icon" href="favicon.ico">
   <link rel="icon" href="favicon.ico">
   <link rel="stylesheet" href="asset/bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="asset/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
   <link rel="stylesheet" href="asset/dist/css/AdminLTE.min.css">
   <link rel="stylesheet" href="asset/dist/css/skins/_all-skins.min.css">
 </head>
@@ -32,18 +31,18 @@
 <?php require __DIR__ . '/sidebar.php'; ?>
   <div class="content-wrapper">
     <section class="content-header">
-      <h1>Dashboard</h1>
+      <h1><?php echo htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8'); ?></h1>
     </section>
     <section class="content">
-      <div class="callout callout-info">
-        <p><?php echo nl2br(htmlspecialchars($information, ENT_QUOTES, 'UTF-8')); ?></p>
-      </div>
+      <?php echo $embedHtml; ?>
     </section>
   </div>
 <?php require_once __DIR__ . '/footer.php'; ?>
 </div>
 <script src="asset/bower_components/jquery/dist/jquery.min.js"></script>
 <script src="asset/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="asset/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="asset/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <script src="asset/dist/js/adminlte.min.js"></script>
 </body>
 </html>
